@@ -1,0 +1,187 @@
+1	{'int': 'data type'}
+2	{'=': 'OPERATOR'}
+3	{'10': 'integer'}
+4	{';': 'SEMICOLON'}
+5	{'void': 'data type'}
+6	{'bubbleSort': 'void variable'}
+7	{'[': 'BRACKET'}
+8	{'int': 'data type'}
+9	{'arr': 'int variable'}
+10	{'[': 'BRACKET'}
+11	{']': 'BRACKET'}
+12	{',': 'COMMA'}
+13	{'int': 'data type'}
+14	{'n': 'int variable'}
+15	{')': 'PARENTHESIS'}
+16	{'{': 'BRACE'}
+17	{'for': 'cycle'}
+18	{'(': 'PARENTHESIS'}
+19	{'int': 'data type'}
+20	{'i': 'int variable'}
+21	{'=': 'OPERATOR'}
+22	{'0': 'integer'}
+23	{';': 'SEMICOLON'}
+24	{'i': 'int variable'}
+25	{'<': 'COMPARISON_OPERATOR'}
+26	{'n': 'int variable'}
+27	{'-': 'OPERATOR'}
+28	{'1': 'integer'}
+29	{';': 'SEMICOLON'}
+30	{'i': 'int variable'}
+31	{'++': 'INCREMENT_OPERATOR'}
+32	{')': 'PARENTHESIS'}
+33	{'for': 'cycle'}
+34	{'(': 'PARENTHESIS'}
+35	{'int': 'data type'}
+36	{'j': 'int variable'}
+37	{'=': 'OPERATOR'}
+38	{'0': 'integer'}
+39	{';': 'SEMICOLON'}
+40	{'j': 'int variable'}
+41	{'<': 'COMPARISON_OPERATOR'}
+42	{'n': 'int variable'}
+43	{'-': 'OPERATOR'}
+44	{'i': 'int variable'}
+45	{'-': 'OPERATOR'}
+46	{'1': 'integer'}
+47	{';': 'SEMICOLON'}
+48	{'j': 'int variable'}
+49	{'++': 'INCREMENT_OPERATOR'}
+50	{')': 'PARENTHESIS'}
+51	{'if': 'conditional'}
+52	{'(': 'PARENTHESIS'}
+53	{'arr': 'int variable'}
+54	{'[': 'BRACKET'}
+55	{'j': 'int variable'}
+56	{']': 'BRACKET'}
+57	{'>': 'COMPARISON_OPERATOR'}
+58	{'arr': 'int variable'}
+59	{'[': 'BRACKET'}
+60	{'j': 'int variable'}
+61	{'+': 'OPERATOR'}
+62	{'1': 'integer'}
+63	{']': 'BRACKET'}
+64	{')': 'PARENTHESIS'}
+65	{'{': 'BRACE'}
+66	{'/*': 'MULTILINE COMMENT START'}
+67	{'*/': 'MULTILINE COMMENT END'}
+68	{'int': 'data type'}
+69	{'temp': 'int variable'}
+70	{'=': 'OPERATOR'}
+71	{'arr': 'int variable'}
+72	{'[': 'BRACKET'}
+73	{'j': 'int variable'}
+74	{']': 'BRACKET'}
+75	{';': 'SEMICOLON'}
+76	{'arr': 'int variable'}
+77	{'[': 'BRACKET'}
+78	{'j': 'int variable'}
+79	{']': 'BRACKET'}
+80	{'=': 'OPERATOR'}
+81	{'arr': 'int variable'}
+82	{'[': 'BRACKET'}
+83	{'j': 'int variable'}
+84	{'+': 'OPERATOR'}
+85	{'1': 'integer'}
+86	{']': 'BRACKET'}
+87	{';': 'SEMICOLON'}
+88	{'arr': 'int variable'}
+89	{'[': 'BRACKET'}
+90	{'j': 'int variable'}
+91	{'+': 'OPERATOR'}
+92	{'1': 'integer'}
+93	{']': 'BRACKET'}
+94	{'=': 'OPERATOR'}
+95	{'temp': 'int variable'}
+96	{';': 'SEMICOLON'}
+97	{'}': 'BRACE'}
+98	{'}': 'BRACE'}
+99	{'int': 'data type'}
+100	{'main': 'function (int)'}
+101	{'(': 'PARENTHESIS'}
+102	{')': 'PARENTHESIS'}
+103	{'{': 'BRACE'}
+104	{'int': 'data type'}
+105	{'arr': 'int variable'}
+106	{'[': 'BRACKET'}
+107	{']': 'BRACKET'}
+108	{'=': 'OPERATOR'}
+109	{'{': 'BRACE'}
+110	{'64': 'integer'}
+111	{',': 'COMMA'}
+112	{'34': 'int variable'}
+113	{',': 'COMMA'}
+114	{'25': 'int variable'}
+115	{',': 'COMMA'}
+116	{'12': 'int variable'}
+117	{',': 'COMMA'}
+118	{'22': 'int variable'}
+119	{',': 'COMMA'}
+120	{'11': 'int variable'}
+121	{',': 'COMMA'}
+122	{'90': 'int variable'}
+123	{'}': 'BRACE'}
+124	{';': 'SEMICOLON'}
+125	{'int': 'data type'}
+126	{'innt': 'int variable'}
+127	{'=': 'OPERATOR'}
+128	{'sizeof': 'operator'}
+129	{'(': 'PARENTHESIS'}
+130	{'arr': 'int variable'}
+131	{')': 'PARENTHESIS'}
+132	{'/': 'OPERATOR'}
+133	{'sizeof': 'operator'}
+134	{'(': 'PARENTHESIS'}
+135	{'arr': 'int variable'}
+136	{'[': 'BRACKET'}
+137	{'0': 'integer'}
+138	{']': 'BRACKET'}
+139	{')': 'PARENTHESIS'}
+140	{';': 'SEMICOLON'}
+141	{'bubbleSort': 'void variable'}
+142	{'(': 'PARENTHESIS'}
+143	{'arr': 'int variable'}
+144	{',': 'COMMA'}
+145	{'n': 'int variable'}
+146	{')': 'PARENTHESIS'}
+147	{';': 'SEMICOLON'}
+148	{'printf': 'operator'}
+149	{'(': 'PARENTHESIS'}
+150	{'"Sorted array: \\n"': 'string constant'}
+151	{';': 'SEMICOLON'}
+152	{'for': 'cycle'}
+153	{'(': 'PARENTHESIS'}
+154	{'int': 'data type'}
+155	{'i': 'int variable'}
+156	{'=': 'OPERATOR'}
+157	{'0': 'integer'}
+158	{';': 'SEMICOLON'}
+159	{'i': 'int variable'}
+160	{'<': 'COMPARISON_OPERATOR'}
+161	{'n': 'int variable'}
+162	{';': 'SEMICOLON'}
+163	{'i': 'int variable'}
+164	{'++': 'INCREMENT_OPERATOR'}
+165	{')': 'PARENTHESIS'}
+166	{'printf': 'operator'}
+167	{'(': 'PARENTHESIS'}
+168	{'"%d"': 'string constant'}
+169	{'arr': 'int variable'}
+170	{'[': 'BRACKET'}
+171	{'i': 'int variable'}
+172	{']': 'BRACKET'}
+173	{')': 'PARENTHESIS'}
+174	{';': 'SEMICOLON'}
+175	{'printf': 'operator'}
+176	{'(': 'PARENTHESIS'}
+177	{'"\\n"': 'string constant'}
+178	{';': 'SEMICOLON'}
+179	{'const': 'modifier'}
+180	{'int': 'data type'}
+181	{'a': 'int variable'}
+182	{'=': 'OPERATOR'}
+183	{'" djjd sdkd sjds dsk dkds dskds kds dskd"': 'string constant'}
+184	{'return': 'keyword'}
+185	{'0': 'integer'}
+186	{';': 'SEMICOLON'}
+187	{'}': 'BRACE'}
