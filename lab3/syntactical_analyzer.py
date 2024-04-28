@@ -26,7 +26,7 @@ class Parser:
             if (type):
                 return TreeNode(type, value=lexeme)
         else:
-            raise SyntaxError(f"Expected tokens {tokens}, but got {self.current_token['lexeme']}.")
+            raise UnexpectedTokenError(self.current_token, self.tokens[self.position - 1]['lexeme'], tokens)
 
     def parse(self, type="Block"):
         nodes = []
@@ -50,10 +50,12 @@ class Parser:
         elif self.current_token['lexeme'] in DATA_TYPE:
             if self.position + 2 < len(self.tokens) and self.tokens[self.position + 2]['lexeme'] == '(':
                 functions.append(self.parse_function())
+            elif self.position + 2 < len(self.tokens) and self.tokens[self.position + 2]['lexeme'] == '[':
+                functions.append(self.parse_array())
             else:
                 functions += self.parse_variable_definition()
         elif self.current_token['type'] == 'KEYWORD':
-            if self.current_token['lexeme'] in ['if', 'for', 'while', 'switch', 'return', 'case', 'structure']:
+            if self.current_token['lexeme'] in ['if', 'for', 'while', 'switch', 'return', 'case']:
                 method_name = f'parse_{self.current_token["lexeme"]}'
                 method = getattr(self, method_name)
                 self.next_token()
@@ -63,6 +65,14 @@ class Parser:
                     functions += res
                 else:
                     functions.append(res)
+            elif self.current_token['lexeme'] == 'struct':
+
+                if self.position + 2 < len(self.tokens) and self.tokens[self.position + 2]['lexeme'] == "{":
+                    self.next_token()
+                    functions.append(self.parse_struct())
+                else:
+                    functions.append(self.parse_struct_call())
+
             elif self.current_token['lexeme'] in ['break', 'continue']:
                 if not self.is_cycle_now:
                     raise IncorrectLoopKeywordError(self.current_token)
@@ -74,7 +84,7 @@ class Parser:
             if self.position + 1 < len(self.tokens) and self.tokens[self.position + 1]['lexeme'] == '(':
                 functions.append(self.parse_function_call())
             else:
-                functions.append(self.parse_formula())
+                functions.append(self.parse_formula("Var Reassignment"))
                 self.eat([";"])
         else:
             self.next_token()
@@ -141,6 +151,12 @@ class Parser:
             if self.current_token['type'] == "IDENTIFIER":
                 param_name = self.current_token['lexeme']
                 self.next_token()
+                if self.current_token['lexeme'] == '[':
+                    param_name += '['
+                    self.next_token()
+                    self.eat(']')
+                    param_name += ']'
+
                 parameter_node = TreeNode("Parameter", value=f"{param_name}")
                 parameters_node.add_child(parameter_node)
             else:
@@ -157,21 +173,31 @@ class Parser:
         return parameters_node
 
     def parse_variable_definition(self, type="Var Definition"):
-        base_type = self.current_token["lexeme"]
-        self.next_token()
+
+        if type == "Var Definition":
+            base_type = self.current_token["lexeme"]
+            self.next_token()
+
+            if base_type == 'const':
+                if self.current_token["lexeme"] in DATA_TYPE:
+                    base_type += f' {self.current_token["lexeme"]}'
+                    self.next_token()
+                else:
+                    raise UnexpectedTokenError(self.current_token)
 
         var_nodes = []
         while True:
             variable_name = self.current_token["lexeme"]
+            #print(variable_name)
             self.next_token()
 
             var_node = TreeNode(type=type)
+            var_node.add_child(TreeNode("Variable", value=f"{variable_name}"))
 
             if self.position < len(self.tokens) and self.current_token["lexeme"] == "=":
                 self.next_token()
 
                 value_node = self.parse_assignment_value()
-                var_node.add_child(TreeNode("Variable", value=f"{variable_name}"))
                 var_node.add_child(TreeNode("Assignment operator", value="="))
                 var_node.add_child(value_node)
 
@@ -182,16 +208,13 @@ class Parser:
 
             self.next_token()
 
-        # print('VAR NODES', var_nodes)
         return var_nodes
 
     def parse_assignment_value(self):
-        if self.position + 1 < len(self.tokens) and self.tokens[self.position + 1]['lexeme'] == '(':
-            return self.parse_function_call()
-        else:
-            res = self.parse_formula()
-            self.eat([';'])
-            return res
+        res = self.parse_formula()
+        self.eat([';'])
+        return res
+
 
     def parse_function_call(self):
         function_name = self.current_token["lexeme"]
@@ -215,22 +238,43 @@ class Parser:
         return function_call_node
 
     def parse_formula(self, type="Expression"):
-        # print('aaaa', self.current_token)
+        #print('aaaa', self.current_token)
         node = TreeNode(type=type)
         children = []
-        left_node = self.parse_variable_or_constant()
+
+        if self.current_token['lexeme'] == "++" or self.current_token['lexeme'] == "--":
+            operation_node = TreeNode("Operator", value=self.current_token["lexeme"])
+            self.next_token()
+            variable_node = self.parse_variable_or_constant()
+            children.append(operation_node)
+            children.append(variable_node)
+            node.add_child(children)
+            return node
+
+        if self.position + 1 < len(self.tokens) and self.tokens[self.position + 1]['lexeme'] == '(':
+            left_node = self.parse_function_call()
+        else:
+            left_node = self.parse_variable_or_constant()
+
 
         #if self.current_token["lexeme"] not in OPERATORS:
         children.append(left_node)
 
         while self.position < len(self.tokens) and self.current_token["lexeme"] in OPERATORS:
             op = self.current_token
-            self.next_token()
-            # print(self.current_token)
+            #print(self.current_token)
             operation_node = TreeNode("Operator", value=op['lexeme'])
-            right_node = self.parse_variable_or_constant()
-            children.append(right_node)
+
+            if self.current_token["lexeme"] == "++" or self.current_token["lexeme"] == "--":
+                children.append(operation_node)
+                self.next_token()
+                break
+
+            self.next_token()
+            expr_node = self.parse_formula()
+            right_node = expr_node.children[0] if len(expr_node.children) == 1 else expr_node
             children.append(operation_node)
+            children.append(right_node)
 
         if type:
             node.add_child(children)
@@ -244,8 +288,19 @@ class Parser:
             self.next_token()
             return const_node
         elif self.current_token["type"] == "IDENTIFIER":
-            var_node = TreeNode("Variable", value=self.current_token["lexeme"])
-            self.next_token()
+            if self.tokens[self.position + 1]['lexeme'] != '[':
+                var_node = TreeNode("Variable", value=self.current_token["lexeme"])
+                self.next_token()
+            else:
+                var_node = TreeNode("Array Element Call")
+                var_node.add_child(TreeNode("Name", value=self.current_token["lexeme"]))
+
+                print(self.current_token)
+                self.next_token()
+                self.eat('[')
+                var_node.add_child(TreeNode("Index", children=[self.parse_formula()]))
+                self.eat(']')
+
             return var_node
         else:
             current_token = self.current_token
@@ -278,7 +333,7 @@ class Parser:
 
         params_node = TreeNode("Parameters")
 
-        params_node.add_child(self.parse_variable_definition())
+        params_node.add_child(self.parse_for_initialization())
 
         params_node.add_child(self.parse_bool("Condition"))
         self.eat([';'])
@@ -341,3 +396,124 @@ class Parser:
         self.eat([';'], "Symbol")
         return_node.add_child(expression)
         return return_node
+
+    def parse_for_initialization(self):
+        if self.current_token["lexeme"] in DATA_TYPE:
+            var_declaration = self.parse_variable_definition()
+            return var_declaration
+        else:
+            var_node = self.parse_variable_or_constant()
+
+            if self.current_token["lexeme"] == '=':
+                self.next_token()
+                value_node = self.parse_formula("")
+                assignment_node = TreeNode("Var Reassignment")
+                assignment_node.add_child(var_node)
+                assignment_node.add_child(TreeNode("Operator", value="="))
+                assignment_node.add_child(value_node)
+                self.eat([';'])
+                return assignment_node
+            else:
+                raise UnexpectedTokenError(self.current_token, var_node.value, ["="])
+
+    def parse_array(self):
+
+        self.next_token()
+        # print(self.current_token)
+
+        array_name = self.current_token['lexeme']
+        self.next_token()
+
+        array_node = TreeNode("Array Definition", value=f"{array_name}")
+
+        # print(1)
+        self.eat('[')
+
+        if self.current_token["lexeme"] != "]":
+            size_node = TreeNode("Size", children=[self.parse_variable_or_constant()])
+
+            array_node.add_child(size_node)
+
+        self.eat(']')
+
+        if self.current_token['lexeme'] == ';':
+            self.next_token()
+            return array_node
+        elif self.current_token['lexeme'] == '=':
+            self.next_token()
+            self.eat('{')
+            parameters_node = TreeNode("Parameters")
+
+            while self.current_token["type"] in ["IDENTIFIER", "CONSTANT"]:
+                #print(self.current_token['lexeme'])
+                parameters_node.add_child(self.parse_variable_or_constant())
+
+                if self.current_token['lexeme'] != '}' and self.position + 1 < len(self.tokens)\
+                        and self.tokens[self.position + 1]['lexeme'] != '}':
+                    self.eat(',')
+
+
+            array_node.add_child(parameters_node)
+            self.eat('}')
+            self.eat(';')
+        else:
+            raise UnexpectedTokenError(self.current_token, ']')
+
+        return array_node
+
+
+    def parse_struct(self):
+        # self.eat(['struct'], "Keyword")
+        struct_name = self.current_token["lexeme"]
+        self.next_token()
+
+        struct_node = TreeNode("Structure", value=struct_name)
+        self.eat(['{'], "Symbol")
+
+        while self.current_token["lexeme"] != '}':
+            if self.position + 2 < len(self.tokens) and self.tokens[self.position + 2]['lexeme'] == '[':
+                struct_node.add_child(self.parse_array())
+            else:
+                struct_node.add_child(self.parse_variable_definition())
+                self.eat(';')
+
+        self.next_token()
+
+        return struct_node
+
+    def parse_struct_call(self):
+        self.next_token()
+        self.next_token()
+        # print(self.current_token)
+
+        struct_name = self.current_token['lexeme']
+        self.next_token()
+
+        array_node = TreeNode("Variable Definition", value=f"{struct_name}")
+
+        # print(1)
+
+        if self.current_token['lexeme'] == ';':
+            self.next_token()
+            return array_node
+        elif self.current_token['lexeme'] == '=':
+            self.next_token()
+            self.eat('{')
+            parameters_node = TreeNode("Parameters")
+
+            while self.current_token["type"] in ["IDENTIFIER", "CONSTANT"]:
+                # print(self.current_token['lexeme'])
+                parameters_node.add_child(self.parse_variable_or_constant())
+
+                if self.current_token['lexeme'] != '}' and self.position + 1 < len(self.tokens) \
+                        and self.tokens[self.position + 1]['lexeme'] != '}':
+                    self.eat(',')
+
+            array_node.add_child(parameters_node)
+            self.eat('}')
+            self.eat(';')
+        else:
+            raise UnexpectedTokenError(self.current_token, ']')
+
+        return array_node
+

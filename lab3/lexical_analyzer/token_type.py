@@ -1,6 +1,7 @@
 from re import match
 from lexical_analyzer.constants import DATA_TYPE, SYMBOLS, KEYWORDS
 from lexical_analyzer.errors import IncorrectVariableError
+from lexical_analyzer.constants import STRUCTURES
 
 
 def analyze_tokens(tokens):
@@ -49,7 +50,10 @@ def get_token_type(token, prev_token, next_token, tokens_with_types, prev_token_
         return "KEYWORD"
     elif token in KEYWORDS:
         return KEYWORDS[token]
-    elif prev_token == ",":
+    elif token == "{":
+        prev_token_type["data_type"] = None
+        return 'SYMBOL'
+    elif prev_token == "," and prev_token_type["data_type"]:
         return prev_token_type["data_type"]
     elif token in SYMBOLS:
         return 'SYMBOL'
@@ -58,6 +62,8 @@ def get_token_type(token, prev_token, next_token, tokens_with_types, prev_token_
     elif prev_token == "struct":
         if next_token == "{":
             DATA_TYPE.append(token)
+            STRUCTURES.append(token)
+            KEYWORDS.append(token)
             return f"structure {token}"
     elif prev_token in DATA_TYPE:
         if match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', token.replace('*', '')):

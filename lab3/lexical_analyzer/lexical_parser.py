@@ -27,8 +27,11 @@ def combine_tokens(tokens, data_types):
     combined_tokens = []
     i = 0
 
+    #print(tokens)
+
     while i < len(tokens):
         combined_token = tokens[i]
+        #print(combined_token)
 
         if i + 1 < len(tokens) and (tokens[i] + tokens[i + 1] in {">=", "<=", "==", "!=", "++", "--", ">>", "<<", "->", "+=",
                                                                   "-=", "*=", "/="}):
@@ -52,13 +55,10 @@ def combine_tokens(tokens, data_types):
                     i += 1
                 if i < len(tokens):
                     combined_token += ' ' + tokens[i]
-            i += 1
 
         elif i + 1 < len(tokens):
             if tokens[i] + tokens[i + 1] == "//":
-                combined_token += tokens[i + 1]
                 i += 2
-                combined_tokens.append(combined_token)
                 while i + 1 < len(tokens) and not tokens[i].endswith('\n'):
                     i += 1
                 continue
@@ -91,5 +91,6 @@ def combine_tokens(tokens, data_types):
         combined_tokens.append(combined_token)
         i += 1
 
+    #print(combined_tokens)
     return combined_tokens
 

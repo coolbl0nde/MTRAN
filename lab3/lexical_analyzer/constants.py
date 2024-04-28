@@ -8,6 +8,7 @@ DATA_TYPE = [
     'double',
     'long double',
     'char',
+    'void',
     'unsigned char',
     'signed char',
     'unsigned short',
@@ -63,8 +64,12 @@ SYMBOLS = {
     '[': 'BRACKET',
     ']': 'BRACKET',
     ';': 'SEMICOLON',
-    ',': 'COMMA'
+    ',': 'COMMA',
+    ':': 'SYMBOL',
+    '=': 'SYMBOL'
 }
+
+STRUCTURES = []
 
 OPERATORS = {
     '=': 'OPERATOR',
