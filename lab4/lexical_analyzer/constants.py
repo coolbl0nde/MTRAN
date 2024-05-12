@@ -106,3 +106,4 @@ OPERATORS = {
     '*/': 'MULTILINE COMMENT END'
 }
 
+C_FUNCS = ["printf", "scanf", "sizeof"]

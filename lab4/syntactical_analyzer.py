@@ -95,7 +95,9 @@ class Parser:
         # print(node.type, node.children)
         colon = ":" if node.children or node.value else ""
 
-        print(f"{indent}- {node.type}{colon} {node.data_type if node.data_type else ''} {node.value if node.value else ''}")
+        #print(
+        #    f"{indent}- {node.type}{colon} {node.data_type if node.data_type else ''} {node.value if node.value else ''}")
+        print(f"{indent}- {node.type}{colon} {node.value if node.value else ''}")
 
         for child in node.children:
             if child:

@@ -56,6 +56,16 @@ def combine_tokens(tokens, data_types):
                 if i < len(tokens):
                     combined_token += ' ' + tokens[i]
 
+        elif tokens[i].startswith("'"):
+            if not tokens[i].endswith("'") or tokens[i].count("'") == 1:
+                i += 1
+
+                while i < len(tokens) and not tokens[i].endswith("'"):
+                    combined_token += ' ' + tokens[i]
+                    i += 1
+                if i < len(tokens):
+                    combined_token += ' ' + tokens[i]
+
         elif i + 1 < len(tokens):
             if tokens[i] + tokens[i + 1] == "//":
                 i += 2

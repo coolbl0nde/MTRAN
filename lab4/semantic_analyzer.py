@@ -1,8 +1,6 @@
-#from lab4.app_types import *
 from semantic_errors import *
 from lexical_analyzer.constants import *
 
-C_FUNCS = ["printf", "scanf", "sizeof"]
 
 class Analyzer:
     def __init__(self, tree):
@@ -46,9 +44,20 @@ class Analyzer:
             }
 
             for child in node.children:
+                data = []
+
                 for param in child.children:
                     if param.value and param.data_type:
-                        self.current_scope[structure_name]['parameters'] = self.current_scope[structure_name]['parameters'] + [(param.value, param.data_type)]
+                        data.extend([param.value, param.data_type])
+
+                    if param.type == 'Size':
+                        data.append(param.children[0].value)
+
+                if len(data) == 2:
+                    data.append(0)
+
+                self.current_scope[structure_name]['parameters'] = (
+                        self.current_scope[structure_name]['parameters'] + [data])
 
         elif node.type == 'Struct Variable Definition':
             struct_name = node.data_type
@@ -63,8 +72,12 @@ class Analyzer:
             if len(provided_args) != len(expected_params):
                 raise ParameterMismatchError(struct_name, len(expected_params), len(provided_args))
 
-            for arg, (param_name, param_type) in zip(provided_args, expected_params):
+            for arg, (param_name, param_type, length) in zip(provided_args, expected_params):
                 arg_type = self.evaluate_type(arg)
+
+                if length and arg.value and arg_type == 'char' and (len(arg.value) - 2) >= int(length):
+                    raise Exception(f'Too long param: {arg.value}! Expected size: {int(length) + 1}')
+
                 if not self.compare_types(arg_type, param_type):
                     raise IncorrectTypeError(arg_type, param_type)
 
@@ -96,6 +109,8 @@ class Analyzer:
 
                 if not self.compare_types(var_type, expr_type):
                     raise IncorrectTypeError(var_type, expr_type)
+            elif 'const' in var_type:
+                raise Exception("Put value for the const value")
 
         elif node.type == 'Var Reassignment':
             var_node = node.children[0]
@@ -147,6 +162,7 @@ class Analyzer:
 
                 for param in array_parameters:
                     data_type = self.evaluate_type(param)
+
                     if data_type != array_type:
                         raise IncorrectTypeError(array_type, data_type)
 
@@ -181,6 +197,14 @@ class Analyzer:
             function_details = self.get_function_or_struct_details(func_name)
 
             if func_name in C_FUNCS:
+                provided_args = node.children[0].children
+
+                for arg in provided_args:
+                    value = arg.children[0].value
+
+                    if value and (value.startswith("'") and value.endswith("'")):
+                        raise Exception('Use \'"\" for char array')
+
                 return
 
             if not function_details:
@@ -235,6 +259,8 @@ class Analyzer:
             elif value.isdigit() or (value.startswith('-') and value[1:].isdigit()):
                 return 'int'
             elif value.replace('.', '', 1).isdigit() and '.' in value:
+                if value.endswith('.'):
+                    raise Exception(f'Unexpected identifier: \'{value}\'. Expected float value.')
                 return 'float'
             else:
                 return 'char'
@@ -315,9 +341,9 @@ class Analyzer:
         compatibility = {
             'short': ['int'],
             'int': ['long'],
-            'long': ['float', 'double', 'decimal'],
+            'long': ['float', 'double'],
             'float': ['double'],
-            'double': ['int', 'float', 'decimal', 'short'],
+            'double': ['int', 'float', 'short'],
             'char': [],
             'bool': [],
         }
